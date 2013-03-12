@@ -2,31 +2,38 @@
 
 	class System {
 		
-		private static $_view;
-		private static $_controller;
-		private static $_method;
+		private $_view;
+		private $_controller;
+		private $_method;
 		
-		public static function setPath($ar){
-			if(isset($ar[0])){ self::$_controller = $ar[0]; }
-			if(isset($ar[1])){ self::$_method = $ar[1]; }
+		public function setPath($ar){
+
+			$this->_controller = $ar[0]; 
+			$this->_method = $ar[1];
 			return true;
 		}
-		
-		public static function setView($view = 'json'){
-			self::$_view = $view;
+
+		public function setView($view = 'json'){
+			$this->_view = $view;
+			echo $this->_view;
 		}
 		
-		public static function controller(){ return self::$_controller; }
-		public static function method(){ return self::$_method; }
+		public function controller(){ return $this->_controller; }
+		public function method(){ return $this->_method; }
 		
-		public static function get($controller,$method){
+		public function get($controller,$method){
 			if(class_exists($controller)){
-				return true;
+				$route = new $controller;
+				if($method == null){ $method == "index"; }
+				$routes = get_class_methods($route);
+				if(in_array($method,$routes)){
+					return call_user_func(array($route, $method));
+				} else { return false; }
 			} else { return false; }
 		}
 		
-		public static function show($data){
-			if(self::$_view == 'json'){ echo json_encode($data); }
+		public function show($data){
+			if($this->_view == 'json'){ echo json_encode($data); }
 			else { echo $data;}
 		}
 	

@@ -1,9 +1,9 @@
 <?php
 	
-	class Access {
+	class Log {
 	
 		public function access(){
-			echo "1";
+			//die(System::controller());
 		}
 		
 	}

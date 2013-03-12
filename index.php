@@ -1,5 +1,5 @@
 <?php
-	
+
 /*
  * -------------------------------------------------------------------
  *  Set all of our globals
@@ -13,7 +13,6 @@
 	define('TRAIL', "/");
 	define('CORE', BP."Core".TRAIL);
 	
-	define('CONFIG_PATH', BP."Config".TRAIL);
 	define('HELPERS_PATH', BP."Helpers".TRAIL);
 	define('CONTROLLERS_PATH', BP."Controllers".TRAIL);
 	define('MODELS_PATH', BP."Models".TRAIL);
@@ -33,7 +32,6 @@
  * -------------------------------------------------------------------
  */
 	# Start with our config and then core as everything should extend these
-	require_dir(CONFIG_PATH);
 	require_dir(CORE);
 	
 	# To ensure we can use configs within Slim
@@ -52,13 +50,13 @@
  
 	# Trigger after_includes event
 	Events::trigger("after_includes",'','');
-
-/* -------------------------------------------------------------------
- *  Set the view we would like to use
+/*
  * -------------------------------------------------------------------
- */ 
-System::setView($config['view']); 
-	
+ *  Start our system class
+ * -------------------------------------------------------------------
+ */
+$system = new System();	
+$system->setView($config['view']);
 /*
  * -------------------------------------------------------------------
  *  Bootstrap our API loader (from Slim) 
@@ -68,7 +66,7 @@ System::setView($config['view']);
 	require_once(BP."Api/Bootstrap.php");
 /*
  *  From this point on we can reference $app which is a Slim instance.
- *  Slim isn't static so we can't
+ *  Slim isn't static so we can't maintain coding styles. Messy ahead. 
  * -------------------------------------------------------------------
  *  Load our routes and hooks - GET
  * -------------------------------------------------------------------
@@ -82,17 +80,23 @@ if($app->request()->isGet()){
 		// key: api.thing.com/key/say/hello/
 		
 		$app->get("/:controller" , function($controller){
-			global $app;
-			$res = System::get($controller,null);
-			if($res){ System::show($res); }
+			global $app,$system;
+			$res = $system->get($controller,null);
+			if($res){ $system->show($res); }
 			else { $app->response()->status(404); }
 		});
 		
 		$app->get("/:controller/:method" , function($controller,$method){
-			global $app;
-			System::setPath(array($controller,$method));
-			$res = System::get($controller,$method);
-			if($res){ System::show($res); }
+			# As this function is anon we have to
+			# call our $app and $system into scope.
+			global $app,$system;
+			
+			# Set our $controller and $method on system.
+			$system->setPath(array(0 => $controller, 1=> $method));
+			
+			# Fetch our view
+			$res = $system->get($controller,$method);
+			if($res){ $system->show($res); }
 			
 			# This breaks our neatness a little but its a sure fire way
 			# to dump out of Slim with dirtying our other classes.

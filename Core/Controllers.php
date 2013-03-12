@@ -2,7 +2,7 @@
 
 	class Controller {
 		
-		private function __construct(){
+		public function __construct(){
 			Events::trigger("before_controller",'','');
 		}
 		
