@@ -128,7 +128,7 @@
 				
 				# If we have a key, validate it.
 				if($key){ 
-					$check = $system->key($key);
+					$check = $system->key($key,$config['keys']['model']);
 					if(!$check){ return $app->response()->status(403); }
 				}
 				

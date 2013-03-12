@@ -51,6 +51,18 @@
 			} else { return false; }
 		}
 		
-		public function key($key){ return false; }
+		public function key($key,$model = null){
+			if($model){
+				if(is_array($model)){
+					return call_user_func(array($model[0], $model[1]),$key);
+				} else {
+					$keys = explode("|",$model);
+					if(in_array($key,$keys)){ return true; }
+					else { return false; }
+				}
+			} else {
+				return false;
+			}
+		}
 	
 	}
