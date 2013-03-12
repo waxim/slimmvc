@@ -50,5 +50,7 @@
 				echo $this->_view->display($data);
 			} else { return false; }
 		}
+		
+		public function key($key){ return false; }
 	
 	}

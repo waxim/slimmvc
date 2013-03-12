@@ -7,63 +7,75 @@ to the browser.
 
 ## Controllers
 Controllers extend Controller with the class name being the name you wish for your URI. You must extend the parent controller in order to preserve the before_controller event if you could care less then leave it out or call it statically from the Events class.
+
 ```PHP
-    class Say extends Controller {
-		public function __construct(){ parent::__construct(); }
-		public function index_get(){ return "Hello, world"; }
-	
-	}
+class Say extends Controller {
+	public function __construct(){ parent::__construct(); }
+	public function index_get(){ return "Hello, world"; }
+
+}
 ```	
+
 Will be triggerd for "say/index" as controller and method in the url with a GET request. 
 
-    class Say extends Controller {
-		public function __construct(){ parent::__construct(); }
-		public function index_post(){ return "Hello, world"; }
-	
-	}
+```PHP
+class Say extends Controller {
+	public function __construct(){ parent::__construct(); }
+	public function index_post(){ return "Hello, world"; }
+
+}
+```	
 
 Will be triggerd for "say/index" as controller and method in the url with a POST request. You can have diffrent verbs within the same class.
 
-    class Say extends Controller {
-		public function __construct(){ parent::__construct(); }
-		public function index_post(){ return "Hello, post"; }
-		public function index_get(){ return "Hello, get"; }
-	
-	}
+```PHP
+class Say extends Controller {
+	public function __construct(){ parent::__construct(); }
+	public function index_post(){ return "Hello, post"; }
+	public function index_get(){ return "Hello, get"; }
+
+}
+```	
 	
 If you wish to use the same verb for a whole class you can.
 
-    class Say extends Controller {
-		
-		var $verb = "get";
-		public function __construct(){ parent::__construct(); }
-		public function index(){ return "Hello, get"; }
-		public function another(){ return "Hello, from another get"; }
+```PHP
+class Say extends Controller {
 	
-	}
+	var $verb = "get";
+	public function __construct(){ parent::__construct(); }
+	public function index(){ return "Hello, get"; }
+	public function another(){ return "Hello, from another get"; }
+
+}
+```	
 	
 Now SlimMVC will automatically afix the verb to the function names in the background.
 
 ## Views
 Views are the 'output formats' of your API, currently they are API wide but I plan to give controllers the power to overwrite a view. To add a view simply create a class that is prefixed with View_ and the the name for your view such as "View_json" all views need the method display() which will receive a variable of content.
 
-	Class View_json {
-		public function display($data){
-			return json_encode($data);
-		}
+```PHP
+Class View_json {
+	public function display($data){
+		return json_encode($data);
 	}
+}
+```	
 	
 You can also send headers for the view by setting an array called headers with the key the name of the header and its value as the value you require.
 
-	Class View_json {
+```PHP
+Class View_json {
+
+	var $headers = array("Content-type" => "text/json");
 	
-		var $headers = array("Content-type" => "text/json");
-		
-		public function display($data){
-			return json_encode($data);
-		}
-	
+	public function display($data){
+		return json_encode($data);
 	}
+
+}
+```	
 
 	
 ## Database

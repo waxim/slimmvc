@@ -95,20 +95,44 @@
  *  Load our routes and hooks - GET, POST, DELETE, PUT
  * -------------------------------------------------------------------
  */ 
-	#if($app->request()->isGet()){
 	if($app->request()->getMethod()){
 
 		Events::trigger("before_request",'','');
 			
 			// no key: api.thing.com/say/hello/
 			// key: api.thing.com/key/say/hello/
+
+			if($config['keys']['enabled']){ $map = "/:key/:controller(/:method)"; }
+			else { $map = "/:controller(/:method)"; }
 			
-			$app->map("/:controller(/:method)" , function($controller,$method = "index"){
+			$app->map($map , function(){
 				# As this function is anon we have to
 				# call our $app and $system into scope.
-				global $app,$system;
+				global $app,$system,$config;
 				
-				# Get our 'verb' from SLIM and pass it to system.
+				# Get the args we are passed
+				# 0 => $controller, 1 => $method = "index"
+				# if keys 0 => key , 1 => $controller, 2 => $method = "index"
+				$args = func_get_args();
+				if($config['keys']['enabled']){
+					$key = $args[0];
+					$controller = $args[1];
+					if(isset($args[2])){ $method = $args[2]; }
+					else { $method = "index"; }
+				} else {
+					$key = null;
+					$controller = $args[0];
+					if(isset($args[1])){ $method = $args[1]; }
+					else { $method = "index"; }
+				}
+				
+				# If we have a key, validate it.
+				if($key){ 
+					$check = $system->key($key);
+					if(!$check){ return $app->response()->status(403); }
+				}
+				
+				# Get our 'verb' from SLIM
 				$verb = strtolower($app->request()->getMethod());
 				
 				# Set our $controller, $method and $verb on system.
