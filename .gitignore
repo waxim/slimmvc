@@ -1,0 +1,2 @@
+# Dont commit a senseative config file
+./Config/Db.php
