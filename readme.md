@@ -3,6 +3,44 @@ SlimMVC is a Model-View-Controller wrapper for SLIM Framework. SlimMVC allows yo
 controllers for your API routes, those routes then pass through a view before being returned
 to the browser.
 
+## Controllers
+Controllers extend Controller with the class name being the name you wish for your URI. Methods should be suffixed with the verb they should be avliable to, if you wish a function to run for more than one verb you will have to add a utility to your class (see below.) If a class has a $verb variable it will treat the whole controller with that variable and you will not need a verb suffix on method names. 
+
+    class Say extends Controller {
+	
+		public function index_get(){ return "Hello, world"; }
+	
+	}
+	
+Will be triggerd for "say/index" as controller and method in the url with a GET request. 
+
+    class Say extends Controller {
+	
+		public function index_post(){ return "Hello, world"; }
+	
+	}
+
+Will be triggerd for "say/index" as controller and method in the url with a POST request. You can have diffrent verbs within the same class.
+
+    class Say extends Controller {
+	
+		public function index_post(){ return "Hello, post"; }
+		public function index_get(){ return "Hello, get"; }
+	
+	}
+	
+If you wish to use the same verb for a whole class you can.
+
+    class Say extends Controller {
+		
+		var $verb = "get";
+		public function index(){ return "Hello, get"; }
+	
+	}
+	
+Now SlimMVC will automatically afix the verb to the function names in the background.
+
+	
 ## Database
 SlimMVC only requires a DB layer if auth and logging are used. Out of the box it supports sql.
 

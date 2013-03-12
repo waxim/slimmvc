@@ -5,11 +5,12 @@
 		private $_view;
 		private $_controller;
 		private $_method;
+		private $_verb;
 		
 		public function setPath($ar){
-
 			$this->_controller = $ar[0]; 
 			$this->_method = $ar[1];
+			$this->_verb = $ar[3];
 			return true;
 		}
 
@@ -27,10 +28,16 @@
 			if(class_exists($controller)){
 				$route = new $controller;
 				if($method == null){ $method == "index"; }
+				
+				if(!$route->verb){ $method_verb = $method."_".$this->_verb; }
+				else if($route->verb == $this->_verb){ $method_verb = $method; } 
+				else { return false; }
+				
 				$routes = get_class_methods($route);
-				if(in_array($method,$routes)){
-					return call_user_func(array($route, $method));
+				if(in_array($method_verb,$routes)){
+					return call_user_func(array($route, $method_verb));
 				} else { return false; }
+			
 			} else { return false; }
 		}
 		

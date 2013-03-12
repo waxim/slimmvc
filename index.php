@@ -2,32 +2,6 @@
 
 /*
  * -------------------------------------------------------------------
- *  Config
- * -------------------------------------------------------------------
- */
- 
-	$config['sys']['view'] = "json";
-	$config['sys']['override_view'] = 1;
-	$config['sys']['404'] = 1;
-	
-	$config['db']['enabled'] = 0;
-	$config['db']['driver'] = 'mysqli';
-	$config['db']['server'] = 'localhost';
-	$config['db']['port'] = '3306';
-	$config['db']['name'] = 'api';
-	$config['db']['user'] = 'root';
-	$config['db']['pass'] = '';
-	$config['db']['prefix'] = 'api_';
-	
-	$config['keys']['enabled'] = 0;
-	$config['keys']['model'] = array('Keys','validate'); # is_array = (class, method) - is_string = array of keys
-	$config['keys']['url'] = 1;
-	$config['keys']['variable'] = ""; # the $_REQUEST var the key is in.
-	
-	$config['log']['enabled'] = 0;
-	$config['log']['model'] = array("Log","save");
-/*
- * -------------------------------------------------------------------
  *  Set all of our globals
  * -------------------------------------------------------------------
  */
@@ -41,6 +15,7 @@
 	define('MY_CORE', BP."Core".TRAIL."MY".TRAIL);
 	
 	define('HELPERS_PATH', BP."Helpers".TRAIL);
+	define('CONFIG_PATH', BP."Config".TRAIL);
 	define('CONTROLLERS_PATH', BP."Controllers".TRAIL);
 	define('VIEWS_PATH', BP."Views".TRAIL);
 	define('MODELS_PATH', BP."Models".TRAIL);
@@ -49,14 +24,19 @@
 /*
  * -------------------------------------------------------------------
  *  Function to include all files with a given extention from a directory
+ *
+ *  require_dir will include files inside a scope so variables will be private
+ *  to avoid problems non 'class' or 'function' files are included manually.
+ *  by adding them to 'dir'
  * -------------------------------------------------------------------
  */
-
+	
+	$dirs = array();
 	function require_dir($dir,$ext = "php"){ foreach (glob($dir."*.".$ext) as $filename) { include $filename; } }
 	
 /*
  * -------------------------------------------------------------------
- *  Include all our require files
+ *  Include all our required files
  * -------------------------------------------------------------------
  */
 	# Start with our config and then core as everything should extend these
@@ -71,13 +51,20 @@
 	Events::trigger("first_event",'','');
  
 	# And the everything else
-	require_dir(EVENTS_PATH);
+	$dirs[] = EVENTS_PATH;
+	$dirs[] = CONFIG_PATH;
+	$dirs[] = CONTROLLERS_PATH;
+	$dirs[] = MODELS_PATH;
+	$dirs[] = VIEWS_PATH;
+	$dirs[] = HELPERS_PATH;
 	
-	require_dir(CONTROLLERS_PATH);
-	require_dir(MODELS_PATH);
-	require_dir(VIEWS_PATH);
-	require_dir(HELPERS_PATH);
- 
+	# Include our files
+	foreach ($dirs as $dir) { 
+		foreach (glob($dir."*.php") as $filename) { 
+			require_once($filename);
+		}
+	}
+	
 	# Trigger after_includes event
 	Events::trigger("after_includes",'','');
 /*
@@ -116,20 +103,21 @@
 			// no key: api.thing.com/say/hello/
 			// key: api.thing.com/key/say/hello/
 			
-			$app->get("/:controller" , function($controller){
+			/*$app->get("/:controller" , function($controller){
 				global $app,$system;
 				$res = $system->get($controller,null);
 				if($res){ $system->show($res); }
 				else { $app->response()->status(404); }
-			});
+			});*/
 			
-			$app->get("/:controller/:method" , function($controller,$method){
+			$app->get("/:controller(/:method)" , function($controller,$method = "index"){
 				# As this function is anon we have to
 				# call our $app and $system into scope.
 				global $app,$system;
 				
+				$verb = "get";
 				# Set our $controller and $method on system.
-				$system->setPath(array(0 => $controller, 1=> $method));
+				$system->setPath(array(0 => $controller, 1=> $method, 3 => $verb));
 				
 				# Fetch our view
 				$res = $system->get($controller,$method);
@@ -146,7 +134,6 @@
 			$app->get('/',function() { global $app; return $app->response()->status(404); }); # 404 no standard requests
 		}
 	}	
-
 	
 /*
  * -------------------------------------------------------------------
