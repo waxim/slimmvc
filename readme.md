@@ -7,13 +7,13 @@ to the browser.
 
 ## Controllers
 Controllers extend Controller with the class name being the name you wish for your URI. You must extend the parent controller in order to preserve the before_controller event if you could care less then leave it out or call it statically from the Events class.
-
+```PHP
     class Say extends Controller {
 		public function __construct(){ parent::__construct(); }
 		public function index_get(){ return "Hello, world"; }
 	
 	}
-	
+```	
 Will be triggerd for "say/index" as controller and method in the url with a GET request. 
 
     class Say extends Controller {
