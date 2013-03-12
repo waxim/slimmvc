@@ -1,4 +1,4 @@
-<?php
+<?php defined('BP') or exit('No direct script access allowed');
 
 	class System {
 		
@@ -14,8 +14,10 @@
 		}
 
 		public function setView($view = 'json'){
-			$this->_view = $view;
-			echo $this->_view;
+			$v = "View_".$view;
+			if(class_exists($v)){
+				$this->_view = new $v;
+			} else { $this->_view = null; }
 		}
 		
 		public function controller(){ return $this->_controller; }
@@ -33,8 +35,11 @@
 		}
 		
 		public function show($data){
-			if($this->_view == 'json'){ echo json_encode($data); }
-			else { echo $data;}
+			if($this->_view){
+				echo $this->_view->display($data);
+			} else { return false; }
+			#if($this->_view == 'json'){ echo json_encode($data); }
+			#else { echo $data;}
 		}
 	
 	}
