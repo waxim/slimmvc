@@ -49,8 +49,6 @@
 			if($this->_view){
 				echo $this->_view->display($data);
 			} else { return false; }
-			#if($this->_view == 'json'){ echo json_encode($data); }
-			#else { echo $data;}
 		}
 	
 	}
