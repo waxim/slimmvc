@@ -4,7 +4,7 @@ controllers for your API routes, those routes then pass through a view before be
 to the browser.
 
 ## Controllers
-Controllers extend Controller with the class name being the name you wish for your URI. Methods should be suffixed with the verb they should be avliable to, if you wish a function to run for more than one verb you will have to add a utility to your class (see below.) If a class has a $verb variable it will treat the whole controller with that variable and you will not need a verb suffix on method names. 
+Controllers extend Controller with the class name being the name you wish for your URI.
 
     class Say extends Controller {
 	
@@ -35,6 +35,7 @@ If you wish to use the same verb for a whole class you can.
 		
 		var $verb = "get";
 		public function index(){ return "Hello, get"; }
+		public function another(){ return "Hello, from another get"; }
 	
 	}
 	
@@ -56,18 +57,12 @@ This event is fired right after the system finishes its includes, its handy to a
 
 ### before_controller
 ### after_controller
+### before_request
+### after_request
 ### before_model
 ### after_model
 ### before_auth
 ### after_auth
-### before_get_request
-### after_get_request
-### before_post_request
-### after_post_request
-### before_put_request
-### after_put_request
-### before_delete_request
-### after_delete_request
 
 ## Auth
 SlimMVC has some support for auth and access control. It also supports rate limiting.

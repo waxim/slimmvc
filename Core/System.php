@@ -41,6 +41,10 @@
 			} else { return false; }
 		}
 		
+		public function view(){
+			return $this->_view;
+		}
+		
 		public function show($data){
 			if($this->_view){
 				echo $this->_view->display($data);

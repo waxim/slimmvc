@@ -92,43 +92,47 @@
  *  From this point on we can reference $app which is a Slim instance.
  *  Slim isn't static so we can't maintain coding styles. Messy ahead. 
  * -------------------------------------------------------------------
- *  Load our routes and hooks - GET
+ *  Load our routes and hooks - GET, POST, DELETE, PUT
  * -------------------------------------------------------------------
  */ 
- 
-	if($app->request()->isGet()){
+	#if($app->request()->isGet()){
+	if($app->request()->getMethod()){
 
-		Events::trigger("before_get",'','');
+		Events::trigger("before_request",'','');
 			
 			// no key: api.thing.com/say/hello/
 			// key: api.thing.com/key/say/hello/
 			
-			/*$app->get("/:controller" , function($controller){
-				global $app,$system;
-				$res = $system->get($controller,null);
-				if($res){ $system->show($res); }
-				else { $app->response()->status(404); }
-			});*/
-			
-			$app->get("/:controller(/:method)" , function($controller,$method = "index"){
+			$app->map("/:controller(/:method)" , function($controller,$method = "index"){
 				# As this function is anon we have to
 				# call our $app and $system into scope.
 				global $app,$system;
 				
-				$verb = "get";
-				# Set our $controller and $method on system.
+				# Get our 'verb' from SLIM and pass it to system.
+				$verb = strtolower($app->request()->getMethod());
+				
+				# Set our $controller, $method and $verb on system.
 				$system->setPath(array(0 => $controller, 1=> $method, 3 => $verb));
 				
 				# Fetch our view
 				$res = $system->get($controller,$method);
-				if($res){ $system->show($res); }
+				$view = $system->view();
 				
-				# This breaks our neatness a little but its a sure fire way
-				# to dump out of Slim with dirtying our other classes.
-				else { return $app->response()->status(404); }  
-			});
+				# Get Silm's response methods
+				$resp = $app->response();
+				
+				# Set the 'view' headers if we have them
+				if($view->headers){
+					foreach($view->headers as $key => $value){ $resp[$key] = $value; }
+				}
+				
+				# Display the content or 404
+				if($res){ 
+					$resp->body($view->display($res));
+				} else { return $app->response()->status(404); }  
+			})->via("GET","POST","PUT","DELETE");
 			
-			Events::trigger("after_get",'','');
+			Events::trigger("after_request",'','');
 		
 		if($config['sys']['404']){
 			$app->get('/',function() { global $app; return $app->response()->status(404); }); # 404 no standard requests
