@@ -111,3 +111,16 @@ SlimMVC user/password htauth.
 
 ## Logging
 SlimMVC supports full logging (logging must be enabled for rate limiting to work) 
+
+## ToDo
+- Write a generic db model with mysqli
+- Add system 'log' files.
+- Add a hardcoded 'log' check and table for api requests.
+- Add a credits system.
+- Add support for user/pass
+- Write a my_keys model to read a db table for keys.
+
+- Tidy index.php
+- Make all 'core' classes 'psudo extend' system
+- Consider methods for 'steaming' data
+ 
