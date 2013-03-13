@@ -7,6 +7,13 @@
 		private $_method;
 		private $_verb;
 		
+		var $db;
+		
+		# Pass our 'sub classes' to system
+		public function __construct(){
+			$this->db = new Db();
+		}
+		
 		public function setPath($ar){
 			$this->_controller = $ar[0]; 
 			$this->_method = $ar[1];
