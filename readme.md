@@ -5,6 +5,18 @@ SlimMVC is a Model-View-Controller wrapper for SLIM Framework. SlimMVC allows yo
 controllers for your API routes, those routes then pass through a view before being returned
 to the browser.
 
+## Features
+- Support for GET, POST, PUT and DELETE
+- Controllers
+- HTTP Basic Auth
+- API Keys
+- Auto Documentation
+- Events
+- Credits
+- Logging
+- Rate limiting
+
+
 ## Controllers
 Controllers extend Controller with the class name being the name you wish for your URI. You must extend the parent controller in order to preserve the before_controller event if you could care less then leave it out or call it statically from the Events class.
 
@@ -126,19 +138,15 @@ I may well add the option to add an error class from which you can handle the ro
 
 ## Events
 SlimMVC contains extensive Event support, which is provided by an edited version of Eric Barnes' [CodeIgniter-Events](https://github.com/ericbarnes/CodeIgniter-Events) to make the code as extenable as possible, instead of
-having to edit core functionality you can attach functions to the system events. 
-
-To register an event you can use
+having to edit core functionality you can attach functions to the system events. Events are simple to add, make a file in the Events folder
 
 ```PHP
-    Events::register('auth_failed', array('Auth_events', 'failed'));
-```
-and then build a class in Events
 
-```PHP
     class Auth_events {
 		public function failed(){ mail("sysadmin@localhost",'Failed Auth', "Somebody just failed auth on your api."); }
 	}
+	
+	Events::register('auth_failed', array('Auth_events', 'failed'));
 ```
 
 Then an email would be sent everytime somebody failed the http auth.
