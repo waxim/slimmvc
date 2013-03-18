@@ -27,7 +27,7 @@
  *
  *  require_dir will include files inside a scope so variables will be private
  *  to avoid problems non 'class' or 'function' files are included manually.
- *  by adding them to 'dir'
+ *  by adding them to 'dirs'
  * -------------------------------------------------------------------
  */
 	
@@ -43,10 +43,6 @@
 	require_dir(CORE);
 	require_dir(MY_CORE);
 	
-	# To ensure we can use configs within Slim
-	# we need to globalize them.
-	global $config;
-	
  	# Trigger our first event
 	Events::trigger("first_event",'','');
  
@@ -58,7 +54,7 @@
 	$dirs[] = VIEWS_PATH;
 	$dirs[] = HELPERS_PATH;
 	
-	# Include our files
+	# Include 'dirs' our files
 	foreach ($dirs as $dir) { 
 		foreach (glob($dir."*.php") as $filename) { 
 			require_once($filename);
@@ -89,18 +85,19 @@
 	require_once(BP."Api/Bootstrap.php");
 /*
  *  From this point on we can reference $app which is a Slim instance.
- *  Slim isn't static so we can't maintain coding styles. Messy ahead. 
  * -------------------------------------------------------------------
- *  Load our routes and hooks - GET, POST, DELETE, PUT
+ *  Load our routes and hooks - note: we use map to map to GET, POST, DELETE, PUT
  * -------------------------------------------------------------------
  */ 
 	if($app->request()->getMethod()){
 
 		Events::trigger("before_request",'','');
 			
-			// no key: api.thing.com/say/hello/
-			// key: api.thing.com/key/say/hello/
-
+			# Work out which "route" syntax to use
+			# Note: everything_else+ passes everything
+			#       else after our 'method' to System::_args
+			#       
+			#  everything within () is 'optional'
 			if($config['keys']['enabled']){ $map = "/:key/:controller(/:method)(/)(:everything_else+)"; }
 			else { $map = "/:controller(/:method)(/)(:everyting_else+)"; }
 			
@@ -108,6 +105,19 @@
 				# As this function is anon we have to
 				# call our $app and $system into scope.
 				global $app,$system,$config;
+				
+				# HTTP Auth attempt
+				if($config['http_auth']['enabled']){
+					$req = $app->request();
+					
+					# Get our user and pw from headers
+					$user = $req->headers('PHP_AUTH_USER');
+					$pw = $req->headers('PHP_AUTH_PW');
+					
+					if(!$system->auth(array('user' => $user, 'pw' => $pw),$config['http_auth']['model'])){
+						return $app->response()->status(403);
+					}
+				}
 				
 				# Get the args we are passed
 				# 0 => $controller, 1 => $method = "index", 2 => array of values.

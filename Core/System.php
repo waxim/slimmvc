@@ -6,7 +6,7 @@
 		private $_controller;
 		private $_method;
 		private $_verb;
-		private static $_args;
+		private $_args;
 		
 		var $db;
 		
@@ -27,8 +27,6 @@
 				$this->_args = $args;
 			}
 		} 
-		
-		public static function getArgs(){ return self::$_args; }
 		
 		public function setView($view = 'json'){
 			$v = "View_".$view;
@@ -82,5 +80,14 @@
 				return false;
 			}
 		}
+		
+		public function auth($auth,$model = null){
+			if($model){
+				if(is_array($model)){
+					return call_user_func(array($model[0], $model[1]),$auth);
+				} else { return false; }
+			} else { return false; }
+		}
+		
 	
 	}
