@@ -52,6 +52,22 @@ class Say extends Controller {
 	
 Now SlimMVC will automatically afix the verb to the function names in the background.
 
+If you wish to pass arguments to your get requests you can use the url and collect them in your controller by accepting an argument in your constructor
+
+```PHP
+class User extends Controller {
+	
+	var $user_idx;
+	public function __construct($args){ $this->user_idx = $args[0] }
+	public function show_get{ return "Showing info for the user ".$this->user_idx; }
+
+}
+```
+
+so /user/show/1 would return "Showing info for the user 1"
+
+if you wish your controller to 404 (say if they forget to give you a user idx) simple set a return value of "false"
+
 ## Views
 Views are the 'output formats' of your API, currently they are API wide but I plan to give controllers the power to overwrite a view. To add a view simply create a class that is prefixed with View_ and the the name for your view such as "View_json" all views need the method display() which will receive a variable of content.
 

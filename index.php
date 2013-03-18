@@ -101,8 +101,8 @@
 			// no key: api.thing.com/say/hello/
 			// key: api.thing.com/key/say/hello/
 
-			if($config['keys']['enabled']){ $map = "/:key/:controller(/:method)"; }
-			else { $map = "/:controller(/:method)"; }
+			if($config['keys']['enabled']){ $map = "/:key/:controller(/:method)(/)(:everything_else+)"; }
+			else { $map = "/:controller(/:method)(/)(:everyting_else+)"; }
 			
 			$app->map($map , function(){
 				# As this function is anon we have to
@@ -110,19 +110,27 @@
 				global $app,$system,$config;
 				
 				# Get the args we are passed
-				# 0 => $controller, 1 => $method = "index"
-				# if keys 0 => key , 1 => $controller, 2 => $method = "index"
+				# 0 => $controller, 1 => $method = "index", 2 => array of values.
+				# if keys 0 => key , 1 => $controller, 2 => $method = "index", 3 => array of values
 				$args = func_get_args();
 				if($config['keys']['enabled']){
 					$key = $args[0];
 					$controller = $args[1];
 					if(isset($args[2])){ $method = $args[2]; }
 					else { $method = "index"; }
+					if(isset($args[3])){
+						$arguments = $args[3];
+					} else { $arguments = null; }
+					
 				} else {
 					$key = null;
 					$controller = $args[0];
 					if(isset($args[1])){ $method = $args[1]; }
 					else { $method = "index"; }
+					
+					if(isset($args[2])){
+						$arguments = $args[2];
+					} else { $arguments = null; }
 				}
 				
 				# If we have a key, validate it.
@@ -133,6 +141,15 @@
 				
 				# Get our 'verb' from SLIM
 				$verb = strtolower($app->request()->getMethod());
+				
+								
+				# If we're a get request, accept variables.
+				# If we're not but we've been send arguments, 404.
+				if($verb == "get"){
+					if($arguments){ $system->setArgs($arguments); }
+				} else if($arguments){
+					return $app->response()->status(404);
+				}
 				
 				# Set our $controller, $method and $verb on system.
 				$system->setPath(array(0 => $controller, 1=> $method, 3 => $verb));
@@ -145,7 +162,7 @@
 				$resp = $app->response();
 				
 				# Set the 'view' headers if we have them
-				if($view->headers){
+				if(isset($view->headers)){
 					foreach($view->headers as $key => $value){ $resp[$key] = $value; }
 				}
 				

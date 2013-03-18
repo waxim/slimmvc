@@ -6,6 +6,7 @@
 		private $_controller;
 		private $_method;
 		private $_verb;
+		private static $_args;
 		
 		var $db;
 		
@@ -20,12 +21,20 @@
 			$this->_verb = $ar[3];
 			return true;
 		}
-
+		
+		public function setArgs($args){
+			if(is_array($args)){
+				$this->_args = $args;
+			}
+		} 
+		
+		public static function getArgs(){ return self::$_args; }
+		
 		public function setView($view = 'json'){
 			$v = "View_".$view;
 			if(class_exists($v)){
 				$this->_view = new $v;
-			} else { $this->_view = null; }
+			} else { $this->_view = new View_json; }
 		}
 		
 		public function controller(){ return $this->_controller; }
@@ -33,10 +42,12 @@
 		
 		public function get($controller,$method){
 			if(class_exists($controller)){
-				$route = new $controller;
+				if(isset($this->_args) && is_array($this->_args)){
+					$route = new $controller($this->_args);
+				} else { $route = new $controller; }
 				if($method == null){ $method == "index"; }
 				
-				if(!$route->verb){ $method_verb = $method."_".$this->_verb; }
+				if(!isset($route->verb)){ $method_verb = $method."_".$this->_verb; }
 				else if($route->verb == $this->_verb){ $method_verb = $method; } 
 				else { return false; }
 				
