@@ -125,14 +125,23 @@ This is a general note on errors, the tempation might be to send actual 404 page
 I may well add the option to add an error class from which you can handle the routes to errors yourself, likely using http codes on an error view. I'll almost cirtainly be adding the option to overwrite http_code from the controller so if you send an error return you can also set a code. 
 
 ## Events
-SlimMVC contains extensive Event support, which is provided by an edited version of ericbarnes (CodeIgniter-Events)[https://github.com/ericbarnes/CodeIgniter-Events] to make the code as extenable as possible, instead of
+SlimMVC contains extensive Event support, which is provided by an edited version of Eric Barnes' [CodeIgniter-Events](https://github.com/ericbarnes/CodeIgniter-Events) to make the code as extenable as possible, instead of
 having to edit core functionality you can attach functions to the system events. 
 
 To register an event you can use
 
-    Events::register('event_name_here', array('class_name_or_object_ref', 'method_name'));
-	
-If you build your events as classes and add them to the "Events" folder they will be automatically included.
+```PHP
+    Events::register('auth_failed', array('Auth_events', 'failed'));
+```
+and then build a class in Events
+
+```PHP
+    class Auth_events {
+		public function failed(){ mail("sysadmin@localhost",'Failed Auth', "Somebody just failed auth on your api."); }
+	}
+```
+
+Then an email would be sent everytime somebody failed the http auth.
 
 ### first_event
 This is the very first event fired by the system, before 'events' are event included so it should only be used to add events from your 'MY' core files.
