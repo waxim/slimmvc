@@ -1,4 +1,4 @@
-**Please Note: This is an indevelopment project you shouldn't try and use it yet.**
+**Please Note: This is an indevelopment project you shouldn't try and use it yet. There is nothing in the way of sanitaion and its hacky. Consider this your warning. :) **
 
 # SLIM MVC
 SlimMVC is a Model-View-Controller wrapper for SLIM Framework. SlimMVC allows you to define
@@ -93,9 +93,36 @@ Class View_json {
 }
 ```	
 
+## Auth
+SlimMVC has some support for auth and access control. It also supports rate limiting.
+
+### API Keys
+SlimMVC contains support for API keys, if enabled from the Keys config. You can also set the model you wish to use for validation, the model can also be set to an array of values to validate against. If enabled the key will the first paramter in the url
+
+    /my_key/controller/method
+
+
+### HTTP Basic Auth
+If http_auth is enabled the user is required to send a authorization header with a base64 encoded string of username:password you can set the model you wish to use to validate these values from within the Http config file. An example might be Aladdin:open sesame which would be sent from the client like so
+
+    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
 	
+It is possible to use both http auth and a key, as keys are used for 'crediting' this can be useful. 
+
 ## Database
-SlimMVC only requires a DB layer if auth and logging are used. Out of the box it supports sql.
+SlimMVC has its own db utility class, slimmvc can function without a db but for the more complex logging and auth options its reccomended. You can use the db utilities by enabling db in the Db config file. 
+
+### Queries
+
+### Results 
+
+## Logging
+SlimMVC supports full logging (logging must be enabled for rate limiting to work) 
+
+## Errors
+This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage the you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response "{error: 'Sorry, you did not include a user id.'}" or some much.
+
+I may well add the option to add an error class from which you can handle the routes to errors yourself, likely using http codes on an error view. 
 
 ## Events
 SlimMVC contains extensive Event support to make the code as extenable as possible, instead of
@@ -116,39 +143,13 @@ This event is fired right after the system finishes its includes, its handy to a
 ### before_auth
 ### after_auth
 
-## Auth
-SlimMVC has some support for auth and access control. It also supports rate limiting.
-
-### API Keys
-SlimMVC contains support for API keys, if enabled from the Keys config. You can also set the model you wish to use for validation, the model can also be set to an array of values to validate against. If enabled the key will the first paramter in the url
-
-    /my_key/controller/method
-
-
-### HTTP Basic Auth
-If http_auth is enabled the user is required to send a authorization header with a 64 encoded string of username:password you can set the model you wish to use to validate these values from within the Http config file. An example might be Aladdin:open sesame which would be sent from the client like so
-
-    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
-	
-It is possible to use both http auth and a key, as keys are used for 'crediting' this can be useful. 
-
-## Logging
-SlimMVC supports full logging (logging must be enabled for rate limiting to work) 
-
-## Errors
-This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage the you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response "{error: 'Sorry, you did not include a user id.'}" or some much.
-
-I may well add the option to add an error class from which you can handle the routes to errors yourself, likely using http codes on an error view. 
-
 ## ToDo
 - Write a generic db model with mysqli
 - Add system 'log' files.
 - Add a hardcoded 'log' check and table for api requests.
 - Add a credits system.
-- Add support for user/pass
+- Add some advanced acl tied to keys maybe some scaffolding to restrict controller access on the fly. 
 - Write a my_keys model to read a db table for keys.
-
-- Tidy index.php
 - Make all 'core' classes 'psudo extend' system ($system->controller = new controller) like CI does.
 - Consider methods for 'streaming' data
- 
+- add a config function to sanitize all the assoc array calls. no more $config['http_auth']['enabled'] -> $system->config("http_auth/enabled"); 

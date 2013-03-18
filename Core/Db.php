@@ -24,7 +24,13 @@
 		}
 		
 		# $DB->query("SELECT * FROM keys WHERE idx > 12 LIMIT 12"); 
-		public function query(){}
+		# let me shout this at you THIS FUNCTION HAS NO SANITATION
+		# DO NOT PASS IT USER SUMITTED VALUES!!!!
+		public function query($query){
+			if($this->connection){
+				$this->last_query = $this->connection->query($query);
+			} else { return false; }
+		}
 		
 		# $DB->select("*","keys",array('limit' => 12, 'where' => "idx > 12");
 		public function select(){}
