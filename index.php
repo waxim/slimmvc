@@ -108,6 +108,7 @@
 				
 				# HTTP Auth attempt
 				if($config['http_auth']['enabled']){
+					Events::trigger("before_auth",'','');
 					$req = $app->request();
 					
 					# Get our user and pw from headers
@@ -115,8 +116,10 @@
 					$pw = $req->headers('PHP_AUTH_PW');
 					
 					if(!$system->auth(array('user' => $user, 'pw' => $pw),$config['http_auth']['model'])){
+						Events::trigger("auth_failed",'','');
 						return $app->response()->status(403);
 					}
+					Events::trigger("after_auth",'','');
 				}
 				
 				# Get the args we are passed

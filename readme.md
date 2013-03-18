@@ -120,9 +120,9 @@ SlimMVC has its own db utility class, slimmvc can function without a db but for 
 SlimMVC supports full logging (logging must be enabled for rate limiting to work) 
 
 ## Errors
-This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage the you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response "{error: 'Sorry, you did not include a user id.'}" or some much.
+This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response "{error: 'Sorry, you did not include a user id.'}" or some much.
 
-I may well add the option to add an error class from which you can handle the routes to errors yourself, likely using http codes on an error view. 
+I may well add the option to add an error class from which you can handle the routes to errors yourself, likely using http codes on an error view. I'll almost cirtainly be adding the option to overwrite http_code from the controller so if you send an error return you can also set a code. 
 
 ## Events
 SlimMVC contains extensive Event support to make the code as extenable as possible, instead of
@@ -134,22 +134,30 @@ This is the very first event fired by the system, before 'events' are event incl
 ### after_includes
 This event is fired right after the system finishes its includes, its handy to add files/folders to the system.
 
-### before_controller
-### after_controller
-### before_request
-### after_request
-### before_model
-### after_model
 ### before_auth
+This event is fired before http_basic auth is attempted.
+
+### auth_failed
+This event is fired if http_basic auth fails, before the page is sent to 404.
+
 ### after_auth
+This event is fired if after auth has finnished, if we got here auth was also a success.
+
+### before_controller
+This event is fired on the construction of a parent controller.
+
+### after_controller
+This event is fired after our controlle has finished and is the last event the system calls before sending our response.
+
 
 ## ToDo
 - Write a generic db model with mysqli
 - Add system 'log' files.
 - Add a hardcoded 'log' check and table for api requests.
-- Add a credits system.
+- Add a credits validation model (will require keys to be enabled)
 - Add some advanced acl tied to keys maybe some scaffolding to restrict controller access on the fly. 
 - Write a my_keys model to read a db table for keys.
 - Make all 'core' classes 'psudo extend' system ($system->controller = new controller) like CI does.
 - Consider methods for 'streaming' data
 - add a config function to sanitize all the assoc array calls. no more $config['http_auth']['enabled'] -> $system->config("http_auth/enabled"); 
+- Finish auto document.
