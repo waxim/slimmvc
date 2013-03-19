@@ -69,13 +69,21 @@
  * -------------------------------------------------------------------
  */
 	$system = new System();
+
+/*
+ * -------------------------------------------------------------------
+ *  Set our config options
+ * -------------------------------------------------------------------
+ */	
+	$system->config->set($config);
+
 /*
  * -------------------------------------------------------------------
  *  Set our view
  * -------------------------------------------------------------------
  */	
-	if($config['sys']['override_view'] && isset($_REQUEST['format'])){ $system->setView($_REQUEST['format']); }
-	else { $system->setView($config['sys']['view']); }
+	if($system->config->get("sys/override_view") && isset($_REQUEST['format'])){ $system->setView($_REQUEST['format']); }
+	else { $system->setView($system->config->get("sys/view")); }
 /*
  * -------------------------------------------------------------------
  *  Bootstrap our API loader (from Slim) 
@@ -98,16 +106,16 @@
 			#       else after our 'method' to System::_args
 			#       
 			#  everything within () is 'optional'
-			if($config['keys']['enabled']){ $map = "/:key/:controller(/:method)(/)(:everything_else+)"; }
+			if($system->config->get("keys/enabled")){ $map = "/:key/:controller(/:method)(/)(:everything_else+)"; }
 			else { $map = "/:controller(/:method)(/)(:everyting_else+)"; }
 			
 			$app->map($map , function(){
 				# As this function is anon we have to
 				# call our $app and $system into scope.
-				global $app,$system,$config;
+				global $app,$system;
 				
 				# HTTP Auth attempt
-				if($config['http_auth']['enabled']){
+				if($system->config->get("http_auth/enabled")){
 					Events::trigger("before_auth",'','');
 					$req = $app->request();
 					
@@ -115,7 +123,7 @@
 					$user = $req->headers('PHP_AUTH_USER');
 					$pw = $req->headers('PHP_AUTH_PW');
 					
-					if(!$system->auth(array('user' => $user, 'pw' => $pw),$config['http_auth']['model'])){
+					if(!$system->auth(array('user' => $user, 'pw' => $pw),$system->config->get("http_auth/model"))){
 						Events::trigger("auth_failed",'','');
 						return $app->response()->status(403);
 					}
@@ -126,7 +134,7 @@
 				# 0 => $controller, 1 => $method = "index", 2 => array of values.
 				# if keys 0 => key , 1 => $controller, 2 => $method = "index", 3 => array of values
 				$args = func_get_args();
-				if($config['keys']['enabled']){
+				if($system->config->get("keys/enabled")){
 					$key = $args[0];
 					$controller = $args[1];
 					if(isset($args[2])){ $method = $args[2]; }
@@ -148,7 +156,7 @@
 				
 				# If we have a key, validate it.
 				if($key){ 
-					$check = $system->key($key,$config['keys']['model']);
+					$check = $system->key($key,$system->config->get("keys/model"));
 					if(!$check){ return $app->response()->status(403); }
 				}
 				
@@ -187,7 +195,7 @@
 			
 			Events::trigger("after_request",'','');
 		
-		if($config['sys']['404']){
+		if($system->config->get("sys/404")){
 			$app->get('/',function() { global $app; return $app->response()->status(404); }); # 404 no standard requests
 		}
 	}	

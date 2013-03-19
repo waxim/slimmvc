@@ -10,9 +10,12 @@
 		
 		var $db;
 		
+		var $config;
+		
 		# Pass our 'sub classes' to system
 		public function __construct(){
-			$this->db = new Db();
+			$this->db = new Db;
+			$this->config = new Config;
 		}
 		
 		public function setPath($ar){

@@ -172,6 +172,8 @@ This event is fired on the construction of a parent controller.
 ### after_controller
 This event is fired after our controlle has finished and is the last event the system calls before sending our response.
 
+## Config
+All files in Config are automatically passed to $system->config so you can accees then by reference. $system->config->get("config_key/reference_key");
 
 ## ToDo
 - Write a generic db model with mysqli
@@ -182,5 +184,4 @@ This event is fired after our controlle has finished and is the last event the s
 - Write a my_keys model to read a db table for keys.
 - Make all 'core' classes 'psudo extend' system ($system->controller = new controller) like CI does.
 - Consider methods for 'streaming' data
-- add a config function to sanitize all the assoc array calls. no more $config['http_auth']['enabled'] -> $system->config("http_auth/enabled"); 
 - Finish auto document.
