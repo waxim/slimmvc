@@ -6,5 +6,5 @@
  * -------------------------------------------------------------------
  */
 	
-	$config['http_auth']['enabled'] = 1;
+	$config['http_auth']['enabled'] = 0;
 	$config['http_auth']['model'] = array('Http_auth','validate');

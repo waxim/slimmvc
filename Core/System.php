@@ -54,6 +54,7 @@
 				
 				$routes = get_class_methods($route);
 				if(in_array($method_verb,$routes)){
+					$this->controller = $route;
 					return call_user_func(array($route, $method_verb));
 				} else { return false; }
 			

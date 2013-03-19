@@ -114,7 +114,7 @@
 				# call our $app and $system into scope.
 				global $app,$system;
 				
-				# HTTP Auth attempt
+				# HTTP Auth attempt if we need to.
 				if($system->config->get("http_auth/enabled")){
 					Events::trigger("before_auth",'','');
 					$req = $app->request();
@@ -165,7 +165,13 @@
 				
 								
 				# If we're a get request, accept variables.
-				# If we're not but we've been send arguments, 404.
+				# If we're not but we've been sent arguments, 404.
+				#
+				# As a side effect of 'optional' arguments and
+				# the fact we map all requests to the same function
+				# we want to ensure someone can't step out of the
+				# 'format' we require for requests. So 404 if a
+				# post request has anything in the url after /method/ 
 				if($verb == "get"){
 					if($arguments){ $system->setArgs($arguments); }
 				} else if($arguments){
@@ -185,6 +191,11 @@
 				# Set the 'view' headers if we have them
 				if(isset($view->headers)){
 					foreach($view->headers as $key => $value){ $resp[$key] = $value; }
+				}
+				
+				# Allow controllers to override our http code
+				if(isset($system->controller->code)){
+					$app->response()->status($system->controller->code);
 				}
 				
 				# Display the content or 404

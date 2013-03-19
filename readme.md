@@ -80,6 +80,29 @@ so /user/show/1 would return "Showing info for the user 1"
 
 if you wish your controller to 404 (say if they forget to give you a user idx) simple set a return value of "false"
 
+controllers can also set a http code to return. add a code variable to your controller and set it to the value you wish to send.
+
+```PHP
+class User extends Controller {
+	
+	var $user_idx;
+	var $code;
+	public function __construct($args){ $this->user_idx = $args[0] }
+	
+	public function show_get{ 
+		if(!$this->user_idx){ 
+			$this->error();
+		} else { 
+			return "Showing info for the user ".$this->user_idx; } 
+		}
+	}
+	
+	public function error(){
+		$this->code = 500;
+		return array("error" => "Sorry, there was an error processing your request.");
+	}
+}
+
 ## Views
 Views are the 'output formats' of your API, currently they are API wide but I plan to give controllers the power to overwrite a view. To add a view simply create a class that is prefixed with View_ and the the name for your view such as "View_json" all views need the method display() which will receive a variable of content.
 
@@ -134,7 +157,7 @@ SlimMVC supports full logging (logging must be enabled for rate limiting to work
 ## Errors
 This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response "{error: 'Sorry, you did not include a user id.'}" or some much.
 
-I may well add the option to add an error class from which you can handle the routes to errors yourself, likely using http codes on an error view. I'll almost cirtainly be adding the option to overwrite http_code from the controller so if you send an error return you can also set a code. 
+Controllers can also control the http_code they wish to send, as explained above.
 
 ## Events
 SlimMVC contains extensive Event support, which is provided by an edited version of Eric Barnes' [CodeIgniter-Events](https://github.com/ericbarnes/CodeIgniter-Events) to make the code as extenable as possible, instead of
