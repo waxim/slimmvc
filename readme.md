@@ -1,7 +1,7 @@
-**Please Note: This is an indevelopment project you shouldn't try and use it yet. There is nothing in the way of sanitaion and its hacky. Consider this your warning. :) **
+** Please Note: This is an indevelopment project you shouldn't try and use it yet. There is nothing in the way of sanitaion and its hacky. Consider this your warning. :) **
 
 # SLIM MVC
-SlimMVC is a Model-View-Controller wrapper for SLIM Framework. SlimMVC allows you to define
+SlimMVC is a Model-View-Controller wrapper for [SLIM API Framework](http://www.slimframework.com/). SlimMVC allows you to define
 controllers for your API routes, those routes then pass through a view before being returned
 to the browser.
 
@@ -18,53 +18,53 @@ to the browser.
 
 
 ## Controllers
-Controllers extend Controller with the class name being the name you wish for your URI. You must extend the parent controller in order to preserve the before_controller event if you could care less then leave it out or call it statically from the Events class.
+Controllers extend Controller with the class name being the name you wish to be used for your url. For example a class called User would be accessed form the url by appending `/user/`. You must extend the parent controller in order to preserve the before_controller event if you could care less then leave it out or call it statically from the Events class as detailed below. A controller in its most basic form looks like this.
 
 ```PHP
-class Say extends Controller {
+class User extends Controller {
 	public function __construct(){ parent::__construct(); }
-	public function index_get(){ return "Hello, world"; }
+	public function index_get(){ return "Hello, get user"; }
 
 }
 ```	
 
-Will be triggerd for "say/index" as controller and method in the url with a GET request. 
+Will be triggerd for `user/index` (also for just `user` as index if the default controller) as controller and method in the url for a GET request.
 
 ```PHP
-class Say extends Controller {
+class User extends Controller {
 	public function __construct(){ parent::__construct(); }
-	public function index_post(){ return "Hello, world"; }
+	public function index_post(){ return "Hello, post user"; }
 
 }
 ```	
 
-Will be triggerd for "say/index" as controller and method in the url with a POST request. You can have diffrent verbs within the same class.
+Will be triggerd for `user/index` as controller and method in the url with a POST request. You can have diffrent verbs within the same class.
 
 ```PHP
-class Say extends Controller {
+class User extends Controller {
 	public function __construct(){ parent::__construct(); }
-	public function index_post(){ return "Hello, post"; }
-	public function index_get(){ return "Hello, get"; }
+	public function index_post(){ return "Hello, post user"; }
+	public function index_get(){ return "Hello, get user"; }
 
 }
 ```	
 	
-If you wish to use the same verb for a whole class you can.
+If you wish to use the same verb for a whole class you can and then you can drop the requirement to append the verb to your methods.
 
 ```PHP
-class Say extends Controller {
+class User extends Controller {
 	
 	var $verb = "get";
 	public function __construct(){ parent::__construct(); }
-	public function index(){ return "Hello, get"; }
-	public function another(){ return "Hello, from another get"; }
+	public function index(){ return "Hello, get user"; }
+	public function another(){ return "Hello, from other get user"; }
 
 }
 ```	
 	
 Now SlimMVC will automatically afix the verb to the function names in the background.
 
-If you wish to pass arguments to your get requests you can use the url and collect them in your controller by accepting an argument in your constructor
+If you wish to pass arguments to your get requests you can and then you use the url and collect them in your controller by accepting an argument in your constructor
 
 ```PHP
 class User extends Controller {
@@ -76,31 +76,36 @@ class User extends Controller {
 }
 ```
 
-so /user/show/1 would return "Showing info for the user 1"
+so `/user/show/1` would return "Showing info for the user 1"
 
-if you wish your controller to 404 (say if they forget to give you a user idx) simple set a return value of "false"
-
-controllers can also set a http code to return. add a code variable to your controller and set it to the value you wish to send.
+Controllers can also set a http code to return. add a code variable to your controller and set it to the value you wish to send. So the code below, will send a 500 error and a message if they give us no user_idx and if the user_idx is less than 11.
 
 ```PHP
 class User extends Controller {
+
+    var $user_idx;
+    var $code;
 	
-	var $user_idx;
-	var $code;
-	public function __construct($args){ $this->user_idx = $args[0] }
-	
-	public function show_get{ 
-		if(!$this->user_idx){ 
-			$this->error();
+    public function __construct($args = array()){ 
+		if(count($args) < 1){ 
+			return $this->error();
 		} else { 
-			return "Showing info for the user ".$this->user_idx; } 
+			$this->user_idx = $args[0];  
 		}
 	}
-	
-	public function error(){
-		$this->code = 500;
-		return array("error" => "Sorry, there was an error processing your request.");
+
+    public function show_get(){ 
+        if($this->user_idx < 11){ 
+            return $this->error();
+        } else { 
+            return "Showing info for the user ".$this->user_idx; 
+        }
 	}
+
+    public function error(){
+        $this->code = 500;
+        return array("error" => "Sorry, there was an error processing your request.");
+    }
 }
 ```	
 
@@ -130,7 +135,6 @@ Class View_json {
 ```	
 
 ## Auth
-SlimMVC has some support for auth and access control. It also supports rate limiting.
 
 ### API Keys
 SlimMVC contains support for API keys, if enabled from the Keys config. You can also set the model you wish to use for validation, the model can also be set to an array of values to validate against. If enabled the key will the first paramter in the url
@@ -139,24 +143,14 @@ SlimMVC contains support for API keys, if enabled from the Keys config. You can 
 
 
 ### HTTP Basic Auth
-If http_auth is enabled the user is required to send a authorization header with a base64 encoded string of username:password you can set the model you wish to use to validate these values from within the Http config file. An example might be user:password which would be sent from the client like so
+If http_auth is enabled the user is required to send a authorization header with a base64 encoded string of username:password you can set the model you wish to use to validate these values from within the Http config file. An example might be `user:password` which would be sent from the client like so
 
     Authorization: Basic dXNlcjpwYXNzd29yZA==
 	
-It is possible to use both http auth and a key, as keys are used for 'crediting' this can be useful. 
-
-## Database
-SlimMVC has its own db utility class, slimmvc can function without a db but for the more complex logging and auth options its reccomended. You can use the db utilities by enabling db in the Db config file. 
-
-### Queries
-
-### Results 
-
-## Logging
-SlimMVC supports full logging (logging must be enabled for rate limiting to work) 
+It is possible to use both http auth and a key.
 
 ## Errors
-This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response "{error: 'Sorry, you did not include a user id.'}" or some much.
+This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response `{error: 'Sorry, you did not include a user id.'}` or some such.
 
 Controllers can also control the http_code they wish to send, as explained above.
 
@@ -165,7 +159,6 @@ SlimMVC contains extensive Event support, which is provided by an edited version
 having to edit core functionality you can attach functions to the system events. Events are simple to add, make a file in the Events folder
 
 ```PHP
-
     class Auth_events {
 		public function failed(){ mail("sysadmin@localhost",'Failed Auth', "Somebody just failed auth on your api."); }
 	}
@@ -197,7 +190,7 @@ This event is fired on the construction of a parent controller.
 This event is fired after our controlle has finished and is the last event the system calls before sending our response.
 
 ## Config
-All files in Config are automatically passed to $system->config so you can accees then by reference. $system->config->get("config_key/reference_key");
+All files in Config are automatically passed to $system->config so you can accees then by reference. `$system->config->get("config_key/reference_key");`
 
 ## Auto Document
 SlimMVC can be used to build basic auto documentation for your API, all you need to do it comment the start of your controllers.
@@ -222,7 +215,7 @@ and then add an additional comment block below to describe each method.
     */
 ```
 
-Notes: @path must be on the third line of the comment block. @method but be on the on the first line of the comment block. Each method must have its own comment block. Comment blocks must appear at the start of the controller.
+`Notes: @path must be on the third line of the comment block. @method but be on the on the first line of the comment block. Each method must have its own comment block. Comment blocks must appear at the start of the controller.`
 
 To build the documentation just run build.php inside the Docs folder and documentation will be generated into that folder.
 
