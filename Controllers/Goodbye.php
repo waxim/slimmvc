@@ -2,21 +2,17 @@
 
 /* Auto Document
  *
- * @path: say
- * @description: Say something to the world.
- * @verbs: get, post
+ * @path: goodbye
+ * @description: Say goodbye to the world.
+ * @verbs: get
  * @arguments: none
  */
 
-/* @method: hello
+/* @method: do
  * @verb: get
- * @description: returns "Hello, world" for posts requests
+ * @description: returns "Goodbye world."
 */
 
-/* @method: hello
- * @verb: post
- * @description: returns "Hello, world" for get requests
-*/
 	class Say extends Controller {
 		
 		//var $verb = "get";

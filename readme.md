@@ -175,6 +175,33 @@ This event is fired after our controlle has finished and is the last event the s
 ## Config
 All files in Config are automatically passed to $system->config so you can accees then by reference. $system->config->get("config_key/reference_key");
 
+## Auto Document
+SlimMVC can be used to build basic auto documentation for your API, all you need to do it comment the start of your controllers.
+
+```PHP
+    /* Auto Document
+     *
+     * @path: controller_name
+     * @description: something about your controller here.
+     * @verbs: get, post
+     * @arguments: does it accept arguments? 'yes' or 'no'
+    */
+```
+	
+and then add an additional comment block below to describe each method.
+
+```PHP
+    /* @method: hello
+     * @verb: get
+     * @description: returns "Hello, world" for posts requests
+	 * @arguments: string $text, int $number // This row can be ommited of @arguments is set to 'no' above.
+    */
+```
+
+Notes: @path must be on the third line of the comment block. @method but be on the on the first line of the comment block. Each method must have its own comment block. Comment blocks must appear at the start of the controller.
+
+To build the documentation just run build.php inside the Docs folder and documentation will be generated into that folder.
+
 ## ToDo
 - Write a generic db model with mysqli
 - Add system 'log' files.
