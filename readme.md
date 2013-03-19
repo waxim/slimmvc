@@ -102,6 +102,7 @@ class User extends Controller {
 		return array("error" => "Sorry, there was an error processing your request.");
 	}
 }
+```	
 
 ## Views
 Views are the 'output formats' of your API, currently they are API wide but I plan to give controllers the power to overwrite a view. To add a view simply create a class that is prefixed with View_ and the the name for your view such as "View_json" all views need the method display() which will receive a variable of content.
