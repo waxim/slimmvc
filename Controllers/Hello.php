@@ -5,30 +5,21 @@
  * @path: say
  * @description: Say something to the world.
  * @verbs: get, post
- * @arguments: none
+ * @arguments: no
  */
 
 /* @method: hello
- * @verb: get
- * @description: returns "Hello, world" for posts requests
-*/
-
-/* @method: hello
- * @verb: post
- * @description: returns "Hello, world" for get requests
+ * @verb: get, post
+ * @description: returns "Hello, world"
 */
 	class Say extends Controller {
 		
-		//var $verb = "get";
-		var $arguments;
-		
-		public function __construct($args = array()){
+		public function __construct(){
 			parent::__construct();
-			$this->arguments = $args;
 		}
 		
 		public function hello_get(){ return array('return' => 'Hello, world.'); }
-		public function hello_post(){ return array('return' => 'Hello, post world.'); }
+		public function hello_post(){ return $this->hello_get(); }
 		
 	}
 

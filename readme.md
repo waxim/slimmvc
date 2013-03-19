@@ -115,9 +115,9 @@ SlimMVC contains support for API keys, if enabled from the Keys config. You can 
 
 
 ### HTTP Basic Auth
-If http_auth is enabled the user is required to send a authorization header with a base64 encoded string of username:password you can set the model you wish to use to validate these values from within the Http config file. An example might be Aladdin:open sesame which would be sent from the client like so
+If http_auth is enabled the user is required to send a authorization header with a base64 encoded string of username:password you can set the model you wish to use to validate these values from within the Http config file. An example might be user:password which would be sent from the client like so
 
-    Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+    Authorization: Basic dXNlcjpwYXNzd29yZA==
 	
 It is possible to use both http auth and a key, as keys are used for 'crediting' this can be useful. 
 

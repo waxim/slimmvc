@@ -4,7 +4,7 @@
 	
 	class Http_auth {
 		public function validate($info){
-			if($info['user'] == "Aladdin" && $info['pw'] == "open sesame"){ return true; }
+			if($info['user'] == "user" && $info['pw'] == "password"){ return true; }
 			else { return false; }
 		}
 
