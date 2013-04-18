@@ -181,7 +181,7 @@
 				} else if($verb == "post"){
 					$system->setArgs($body);
 				} else if($arguments){
-					return $app->response()->status(404);
+					return $app->response()->status(400);
 				}
 				
 				# WHAT ABOUT POST BODY?!?!
@@ -216,7 +216,7 @@
 			Events::trigger("after_request",'','');
 		
 		if($system->config->get("sys/404")){
-			$app->get('/',function() { global $app; return $app->response()->status(404); }); # 404 no standard requests
+			$app->get('/',function() { global $app; return $app->response()->status(400); }); # 404 no standard requests
 		}
 	}	
 	

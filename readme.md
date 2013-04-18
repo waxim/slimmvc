@@ -66,8 +66,6 @@ Now SlimMVC will automatically afix the verb to the function names in the backgr
 
 If you wish to pass arguments to your get requests you can and then you use the url and collect them in your controller by accepting an argument in your constructor
 
-Note: Expect this process to change to accept coupling from the and to pass the arguments as an on associated object like we do with a JSON body.
-
 ```PHP
 class User extends Controller {
 	
@@ -79,6 +77,8 @@ class User extends Controller {
 ```
 
 so `/user/show/1` would return "Showing info for the user 1"
+
+Note: Expect this process to change to accept coupling from the URL and to pass the arguments as an on associated object like we do with a JSON body. So URLs would look like /user/show/user_idx/1/other_var/other_value
 
 You can also pass a json object in the body of your request (for all but GET request) this will be pass to your controller in the contructer as a PHP object, so for a POST body such as
 
@@ -196,6 +196,24 @@ It is possible to use both http auth and a key.
 
 ## Errors
 This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response `{error: 'Sorry, you did not include a user id.'}` or some such.
+
+<table>
+  <tr>
+    <th>HTTP Code</th><th>Meaning</th>
+  </tr>
+  <tr>
+    <td><stong>200</strong></td><td>Everything Okay.</td>
+  </tr>
+  <tr>
+    <td><strong>404</strong></td><td>The controller or method could not be found.</td>
+  </tr>
+  <tr>
+    <td><strong>403</strong></td><td>Auth failed.</td>
+  </tr>
+  <tr>
+    <td><strong>400</strong></td><td>Badly formatted request.</td>
+  </tr>
+</table>
 
 Controllers can also control the http_code they wish to send, as explained above. Events are explained below. 
 
