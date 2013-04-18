@@ -1,8 +1,8 @@
 
-__Author Note
+__Author Note__
 Firstly, this suited my needs. I tried to take steps to make this nicely usable by others but if you have a complex API requirement just use SLIM Framework and dont bother with my 'wrapper' you'll have more control and a better API. Also, this destorys most of the hard work Josh has done with coding standards and PHP 5 lovelyness, I make no use of his middleware functionality or any of his in built hooks so if you need them you'll again likely be better off with plain old SLIM. 
 
-This is still in development and has not been throughly tested so please, please, PLEASE do not drop this into production and expect to be fine. Test the shit out of it and read the code I've written, make sure you understand the implications of my methods. Also, if you spot me being a dofus anywhere or something just plain vomit inducing (which is likely.) let me know.__
+This is still in development and has not been throughly tested so please, please, PLEASE do not drop this into production and expect to be fine. Test the shit out of it and read the code I've written, make sure you understand the implications of my methods. Also, if you spot me being a dofus anywhere or something just plain vomit inducing (which is likely.) let me know.
 
 # SLIM MVC
 SlimMVC is a Model-View-Controller wrapper for [SLIM API Framework](http://www.slimframework.com/). SlimMVC allows you to define
