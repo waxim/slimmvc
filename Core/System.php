@@ -8,13 +8,10 @@
 		private $_verb;
 		private $_args;
 		
-		var $db;
-		
 		var $config;
 		
 		# Pass our 'sub classes' to system
 		public function __construct(){
-			$this->db = new Db;
 			$this->config = new Config;
 		}
 		
@@ -28,6 +25,13 @@
 		public function setArgs($args){
 			if(is_array($args)){
 				$this->_args = $args;
+			} else {
+				$obj = json_decode($args);
+				if(is_object($obj)){
+					$this->_args = $obj;
+				} else {
+					$this->_args = array($args);
+				}
 			}
 		} 
 		
@@ -43,7 +47,7 @@
 		
 		public function get($controller,$method){
 			if(class_exists($controller)){
-				if(isset($this->_args) && is_array($this->_args)){
+				if(isset($this->_args)){
 					$route = new $controller($this->_args);
 				} else { $route = new $controller; }
 				if($method == null){ $method == "index"; }

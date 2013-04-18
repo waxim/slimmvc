@@ -28,7 +28,7 @@ class User extends Controller {
 }
 ```	
 
-Will be triggerd for `user/index` (also for just `user` as index if the default controller) as controller and method in the url for a GET request.
+Will be triggerd for `user/index` (also for just `user` as index is the default controller) as controller and method in the url for a GET request.
 
 ```PHP
 class User extends Controller {
@@ -66,6 +66,8 @@ Now SlimMVC will automatically afix the verb to the function names in the backgr
 
 If you wish to pass arguments to your get requests you can and then you use the url and collect them in your controller by accepting an argument in your constructor
 
+Note: Expect this process to change to accept coupling from the and to pass the arguments as an on associated object like we do with a JSON body.
+
 ```PHP
 class User extends Controller {
 	
@@ -78,6 +80,48 @@ class User extends Controller {
 
 so `/user/show/1` would return "Showing info for the user 1"
 
+You can also pass a json object in the body of your request (for all but GET request) this will be pass to your controller in the contructer as a PHP object, so for a POST body such as
+
+```JSON
+{
+	"user_idx":"12"
+}
+```
+
+From your controller you can so something like the following
+
+```PHP
+class User extends Controller {
+	
+	var $user_idx;
+	public function __construct($args = null){ if($args){ $this->user_idx = $args->user_idx; } }
+	public function show_post{ return "Showing info for the user ".$this->user_idx; }
+
+}
+```
+
+and also obviously you could combine the two
+
+```PHP
+class User extends Controller {
+	
+	var $user_idx;
+	public function __construct($args = null){ 
+		if(is_object($args)){ 
+			$this->user_idx = $args->user_idx; 
+		} else {
+			$this->user_idx = $args[0];
+		}
+	}
+	
+	public function show_get{ return "Showing info for the user ".$this->user_idx; }
+	public function show_post{ $this->show_get(); }
+
+}
+```
+
+Request bodies that do not convert to objects via json_decode are passed as the first key of an array to the controller.
+
 Controllers can also set a http code to return. add a code variable to your controller and set it to the value you wish to send. So the code below, will send a 500 error and a message if they give us no user_idx and if the user_idx is less than 11.
 
 ```PHP
@@ -85,6 +129,7 @@ class User extends Controller {
 
     var $user_idx;
     var $code;
+	var $verb = "get";
 	
     public function __construct($args = array()){ 
 		if(count($args) < 1){ 
@@ -94,7 +139,7 @@ class User extends Controller {
 		}
 	}
 
-    public function show_get(){ 
+    public function show(){ 
         if($this->user_idx < 11){ 
             return $this->error();
         } else { 
@@ -152,7 +197,7 @@ It is possible to use both http auth and a key.
 ## Errors
 This is a general note on errors, the tempation might be to send actual 404 pages or maybe error breakdowns but my feeling is this should be avoided so a 'global' way to run to errors hasn't really be included to instead encourage you to use actual returns to pass meaningful errors from your controllers to your end users. The system will 404 on a missing controller or method and will 403 on a access validation by default sending ONLY the http codes which I think is cleanest, you controllers can run to 404 by returning false but a much nicer way might be to return say a json response `{error: 'Sorry, you did not include a user id.'}` or some such.
 
-Controllers can also control the http_code they wish to send, as explained above.
+Controllers can also control the http_code they wish to send, as explained above. Events are explained below. 
 
 ## Events
 SlimMVC contains extensive Event support, which is provided by an edited version of Eric Barnes' [CodeIgniter-Events](https://github.com/ericbarnes/CodeIgniter-Events) to make the code as extenable as possible, instead of

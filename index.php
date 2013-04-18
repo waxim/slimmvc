@@ -163,7 +163,9 @@
 				# Get our 'verb' from SLIM
 				$verb = strtolower($app->request()->getMethod());
 				
-								
+				# Get our request body
+				$body = $app->request()->getBody();
+				
 				# If we're a get request, accept variables.
 				# If we're not but we've been sent arguments, 404.
 				#
@@ -171,12 +173,19 @@
 				# the fact we map all requests to the same function
 				# we want to ensure someone can't step out of the
 				# 'format' we require for requests. So 404 if a
-				# post request has anything in the url after /method/ 
+				# post request has anything in the url after /method/
+				# if it doesnt we pass the body as the first
+				# argument into our controller.
 				if($verb == "get"){
 					if($arguments){ $system->setArgs($arguments); }
+				} else if($verb == "post"){
+					$system->setArgs($body);
 				} else if($arguments){
 					return $app->response()->status(404);
 				}
+				
+				# WHAT ABOUT POST BODY?!?!
+				# $system->setBody($app->getRequest()->getBody());
 				
 				# Set our $controller, $method and $verb on system.
 				$system->setPath(array(0 => $controller, 1=> $method, 3 => $verb));
