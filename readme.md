@@ -1,4 +1,9 @@
-** Please Note: This is an indevelopment project you shouldn't try and use it yet. There is nothing in the way of sanitaion and its hacky. Consider this your warning. :) **
+```
+Author Note
+Firstly, this suited my needs. I tried to take steps to make this nicely usable by others but if you have a complex API requirement just use SLIM Framework and dont bother with my 'wrapper' you'll have more control and a better API. Also, this destorys most of the hard work Josh has done with coding standards and PHP 5 lovelyness, I make no use of his middleware functionality or any of his in built hooks so if you need them you'll again likely be better off with plain old SLIM. 
+
+This is still in development and has not been throughly tested so please, please, PLEASE do not drop this into production and expect to be fine. Test the shit out of it and read the code I've written, make sure you understand the implications of my methods. Also, if you spot me being a dofus anywhere or something just plain vomit inducing (which is likely.) let me know.
+```
 
 # SLIM MVC
 SlimMVC is a Model-View-Controller wrapper for [SLIM API Framework](http://www.slimframework.com/). SlimMVC allows you to define
@@ -202,7 +207,7 @@ This is a general note on errors, the tempation might be to send actual 404 page
     <th>HTTP Code</th><th>Meaning</th>
   </tr>
   <tr>
-    <td><stong>200</strong></td><td>Everything Okay.</td>
+    <td><strong>200</strong></td><td>Everything Okay.</td>
   </tr>
   <tr>
     <td><strong>404</strong></td><td>The controller or method could not be found.</td>
@@ -215,7 +220,7 @@ This is a general note on errors, the tempation might be to send actual 404 page
   </tr>
 </table>
 
-Controllers can also control the http_code they wish to send, as explained above. Events are explained below. 
+Controllers can also control the http_code they wish to send, as explained above. Events are explained above. 
 
 ## Events
 SlimMVC contains extensive Event support, which is provided by an edited version of Eric Barnes' [CodeIgniter-Events](https://github.com/ericbarnes/CodeIgniter-Events) to make the code as extenable as possible, instead of
